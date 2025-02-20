@@ -23,7 +23,7 @@ In customerRoutes sind folgende Routen definiert:
 
 export async function customerRoutes(fastify, options)
 {
-    fastify.get("/", getCustomerOptions, async (request, reply) =>
+    fastify.get("/", getCustomersOptions, async (request, reply) =>
     {
         const customers = getCustomers(fastify);
         if (!customers)

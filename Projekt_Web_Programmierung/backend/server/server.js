@@ -13,7 +13,8 @@ import
 } 
 from "./schemas/schemas.js";
 
-import dbConnector from "./database/database.js";
+import dbConnector from '../database/database.js';
+//".backend/database/database.js"
 
 // Import CORS for frontend development
 
@@ -42,5 +43,3 @@ catch (error)
     console.log(error)
     process.exit(1)
 }
-
-fastify.register(c)
