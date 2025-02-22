@@ -14,10 +14,8 @@ import
 from "./schemas/schemas.js";
 
 import dbConnector from '../database/database.js';
-//".backend/database/database.js"
 
-// Import CORS for frontend development
-
+import cors from "@fastify/cors";
 
 const server = fastify
 (
@@ -29,6 +27,17 @@ const server = fastify
 server.addSchema(customerSchema);
 server.addSchema(offerSchema);
 
+fastify.register(cors,
+{/*
+    origin: (origin, callback) => {
+        const allowedOrigins = ["http://localhost:3000", "*"];
+        if (!origin || allowedOrigins.includes(origin)) 
+        {callback(null, true);}
+        else 
+        {callback(new Error("Not allowed by CORS"));}
+    }*/
+    origin: "*" // für Testzwecke
+});
 server.register(dbConnector);
 server.register(customerRoutes, {prefix: "/customer"}); //customerRoutes
 server.register(offerRoutes, {prefix: "/offer"}); //orderRoutes
