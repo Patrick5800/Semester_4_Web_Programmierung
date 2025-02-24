@@ -1,0 +1,20 @@
+meta {
+  name: Create Customer
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/customer/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Hans Jürgen",
+    "email": "hans.juergen@gmx.net",
+    "phone": "123456789",
+    "address": "Musterstraße 4"
+  }
+}

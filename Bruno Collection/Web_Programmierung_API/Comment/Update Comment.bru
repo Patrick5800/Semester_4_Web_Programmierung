@@ -1,0 +1,19 @@
+meta {
+  name: Update Comment
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/comment/2/update
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "offer_id": 2,
+      "comment_text": "Hallo, dies ist ein Kommentar.",
+      "created_by": "John Doe"
+  }
+}

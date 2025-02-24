@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Web_Programmierung_API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

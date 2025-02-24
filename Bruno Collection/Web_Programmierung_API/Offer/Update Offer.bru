@@ -1,0 +1,21 @@
+meta {
+  name: Update Offer
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/offer/1/update
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "customer_id": 2,
+      "name": "Toilet Cleaning",
+      "price": 1500.00,
+      "currency": "USD",
+      "status": "Draft"
+  }
+}

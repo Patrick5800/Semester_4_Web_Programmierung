@@ -1,0 +1,21 @@
+meta {
+  name: Create Offer
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:8080/offer/create
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "customer_id": 2,
+      "name": "Website Development",
+      "price": 1500.00,
+      "currency": "USD",
+      "status": "Draft"
+  }
+}
