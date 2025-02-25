@@ -16,9 +16,13 @@ export default function CustomerList() {
     useEffect(() => {
         async function fetchCustomers() {
             try {
-                const response = await fetch("http://localhost:8080/customer");
+                const response = await fetch("http://localhost:8080/customer/all");
                 const data = await response.json();
-                setCustomers(data);
+                if (Array.isArray(data)) {
+                    setCustomers(data);
+                } else {
+                    console.error("Expected an array of customers");
+                }
             } catch (error) {
                 console.error("Error fetching customers:", error);
             } finally {
@@ -44,13 +48,19 @@ export default function CustomerList() {
                     </tr>
                 </thead>
                 <tbody>
-                    {customers.map((customer) => (
-                        <tr key={customer.customer_id}>
-                            <td>{customer.customer_id}</td>
-                            <td>{customer.name}</td>
-                            <td>{customer.email}</td>
+                    {Array.isArray(customers) ? (
+                        customers.map((customer) => (
+                            <tr key={customer.customer_id}>
+                                <td>{customer.customer_id}</td>
+                                <td>{customer.name}</td>
+                                <td>{customer.email}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan={3}>No customers available</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
         </div>
