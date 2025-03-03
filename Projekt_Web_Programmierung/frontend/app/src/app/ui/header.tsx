@@ -25,16 +25,25 @@ export default function Header() {
     <header className={styles.header}>
       <nav className={styles.navbar}>
         <Link href="/" className={styles.logo}>
-          <Image src="/logops.ico" alt="Prismarine Solutions Logo" width={32} height={32} />
+          <Image src="/favicon.ico" alt="Prismarine Solutions Logo" layout="fixed" width={50} height={50} />
+          <span>Prismarine Solutions</span>
         </Link>
-        <Link href="/" className={styles.navlink}>Angebote</Link>
-        <Link href="/customer" className={styles.navlink}>Kunden</Link>
-        <Link href="/tags" className={styles.navlink}>Tags suchen</Link>
-        <select value={role} onChange={handleRoleChange} className={styles.roleSelect}>
-          <option value="Account-Manager">Account-Manager</option>
-          <option value="Developer">Developer</option>
-          <option value="User">User</option>
-        </select>
+        <Link href="/customer/all" className={styles.navlink}>
+          <button className={styles.headerButton}>Kunden</button>
+        </Link>
+        <Link href="/offer/all" className={styles.navlink}>
+          <button className={styles.headerButton}>Angebote</button>
+        </Link>
+        <Link href="/tags" className={styles.navlink}>
+          <button className={styles.headerButton}>Tags</button>
+        </Link>
+        <div className={styles.roleDropdown}>
+          <select value={role} onChange={handleRoleChange} className={styles.dropdownOptions}>
+            <option value="Account-Manager">Account-Manager</option>
+            <option value="Developer">Entwickler</option>
+            <option value="User">Benutzer</option>
+          </select>
+        </div>
       </nav>
     </header>
   );

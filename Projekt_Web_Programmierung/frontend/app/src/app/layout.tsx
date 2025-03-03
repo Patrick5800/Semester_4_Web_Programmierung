@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import Header from "./ui/header";
 import styles from "./ui/header.module.css";
+import Footer from "./ui/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Header></Header>
         <main>{children}</main>
-        <footer>
-          <p>Footer</p>
-        </footer>
+        <Footer></Footer>
       </body>
     </html>
   );

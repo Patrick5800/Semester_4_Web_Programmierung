@@ -1,4 +1,4 @@
-import CustomerList from "./customers/customer-list";
+import CustomerList from "./ui/customer-list";
 
 export default function Home()
   {
@@ -8,3 +8,10 @@ export default function Home()
       </div>
     );
   }
+
+export function generateMetadata() {
+  return {
+    title: "Prismarine Solutions",
+    description: "Prismarine Solutions - Ihr Partner für individuelle Softwarelösungen",
+  };
+}

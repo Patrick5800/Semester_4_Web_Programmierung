@@ -35,8 +35,9 @@ server.register(cors,
         {callback(null, true);}
         else 
         {callback(new Error("Not allowed by CORS"));}
-    }
-    //origin: "*" // für Testzwecke
+    },
+    //origin: "*", // für Testzwecke
+    methods: ["GET", "POST", "PATCH", "DELETE"]
 });
 server.register(dbConnector);
 server.register(customerRoutes, {prefix: "/customer"}); //customerRoutes

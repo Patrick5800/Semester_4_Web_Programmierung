@@ -1,56 +1,75 @@
-/* From Uiverse.io by Voxybuns */ 
-.button {
-    /* Variables */
-    --button_radius: 0.75em;
-    --button_color: #e8e8e8;
-    --button_outline_color: #000000;
-    font-size: 17px;
-    font-weight: bold;
-    border: none;
-    cursor: pointer;
-    border-radius: var(--button_radius);
-    background: var(--button_outline_color);
-  }
-  
-  .button_top {
-    display: block;
-    box-sizing: border-box;
-    border: 2px solid var(--button_outline_color);
-    border-radius: var(--button_radius);
-    padding: 0.75em 1.5em;
-    background: var(--button_color);
-    color: var(--button_outline_color);
-    transform: translateY(-0.2em);
-    transition: transform 0.1s ease;
-  }
-  
-  button:hover .button_top {
-    /* Pull the button upwards when hovered */
-    transform: translateY(-0.33em);
-  }
-  
-  button:active .button_top {
-    /* Push the button downwards when pressed */
-    transform: translateY(0);
-  }  
+.headerButton {
+  width: 150px;
+  height: 60px;
+  border: 3px solid #82ebba;
+  border-radius: 45px;
+  transition: all 0.3s;
+  cursor: pointer;
+  background: white;
+  font-size: 1.0em;
+  font-weight: 550;
+  text-align: center;
+}
+
+.headerButton:hover {
+  background: #03df78d8;
+  color: white;
+  font-size: 1.2em;
+  text-align: center;
+}
 
 .header {
-  background-color: #f8f9fa;
+  background-color: #f7f7f7;
   padding: 1rem;
   border-bottom: 1px solid #e7e7e7;
+}
+
+.navlink {
+  padding: 10px;
 }
 
 .navbar {
   display: flex;
   justify-content: space-around;
+  align-items: center;
 }
 
-.navlink {
-  color: #007bff;
-  text-decoration: none;
+
+.roleDropdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #a10000;
+  color:#007bff;
+
+}
+
+.dropdownOptions {
+  color:aquamarine;
+  border-radius: 100px;
+  background-color: #a10000;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
   font-weight: bold;
+  text-decoration: none;
+  color: #000;
 }
 
-.navlink:hover {
-  text-decoration: underline;
+.logo img {
+  margin-right: 0.5rem;
+  width: 50px;
+  height: 50px;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
