@@ -23,6 +23,7 @@ const offerSchema = {
         price: { type: "number" },
         currency: { type: "string" },
         status: { type: "string", enum: ["Draft", "In Progress", "Active", "On Ice"] },
+        hints: { type: "array", items: { type: "string" } },
         created_at: { type: "string", format: "date-time" },
         updated_at: { type: "string", format: "date-time" },
     },
@@ -33,7 +34,7 @@ const fileSchema = {
     $id: "fileSchema",
     type: "object",
     properties: {
-        file_id: { type: "integer" },
+        file_id: { type: "string" },
         offer_id: { type: "integer" },
         file_name: { type: "string" },
         file_path: { type: "string" },
@@ -53,7 +54,7 @@ const commentSchema = {
         created_by: { type: "string" },
         created_at: { type: "string", format: "date-time" },
     },
-    required: ["comment_id", "offer_id", "comment_text", "created_by"]
+    required: ["comment_id", "offer_id", "comment_text"]
 };
 
 const tagSchema = {
@@ -81,9 +82,9 @@ const taskSchema = {
 };
 
 export {
+    fileSchema,
     customerSchema,
     offerSchema,
-    fileSchema,
     commentSchema,
     tagSchema,
     taskSchema,

@@ -22,7 +22,9 @@ export default function OfferList() {
     useEffect(() => {
         async function loadOffers() {
             const data = await fetchAllOffers();
-            setOffers(data);
+            // Sortiere die Angebote nach der größten offer_id zuerst
+            const sortedData = data.sort((a: Offer, b: Offer) => b.offer_id - a.offer_id);
+            setOffers(sortedData);
             setLoading(false);
         }
         loadOffers();

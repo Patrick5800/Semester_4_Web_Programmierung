@@ -8,6 +8,7 @@ export const createOfferOptions = {
                 price: { type: "number" },
                 currency: { type: "string" },
                 status: { type: "string", enum: ["Draft", "In Progress", "Active", "On Ice"] },
+                hints: { type: "array", items: { type: "string" } },
             },
             required: ["customer_id", "name"],
         },
@@ -140,6 +141,45 @@ export const changeOfferStatusOptions = {
                 },
             },
             400: {
+                type: "object",
+                properties: {
+                    error: { type: "string" },
+                },
+            },
+        },
+    },
+};
+
+export const legacyOfferOptions = {
+    schema: {
+        body: {
+            type: "object",
+            properties: {
+                xCreatedOn: { type: "string", format: "date-time" },
+                xCreatedBy: { type: "string" },
+                xOffer: {
+                    type: "object",
+                    properties: {
+                        customerId: { type: "integer" },
+                        price: { type: "number" },
+                        currency: { type: "string" },
+                        state: { type: "string", },
+                        name: { type: "string" },
+                        hints: { type: "array", items: { type: "string" } },
+                    },
+                    required: ["customerId", "name", "state"],
+                },
+            },
+            required: ["xCreatedOn", "xCreatedBy", "xOffer"],
+        },
+        response: {
+            201: {
+                type: "object",
+                properties: {
+                    offer: { $ref: "offerSchema" },
+                },
+            },
+            500: {
                 type: "object",
                 properties: {
                     error: { type: "string" },

@@ -13,6 +13,7 @@ import {
     updateOfferOptions,
     deleteOfferOptions,
     changeOfferStatusOptions,
+    legacyOfferOptions,
 } from "../schemas/offerSchemas.js";
 
 import {
@@ -22,6 +23,13 @@ import {
     updateCommentOptions,
     deleteCommentOptions,
 } from "../schemas/commentSchemas.js";
+
+import {
+    createFileOptions,
+    getFilesByOfferIdOptions,
+    getFileByIdOptions,
+    deleteFileOptions,
+} from "../schemas/fileSchemas.js";
 
 import {
     getCustomers,
@@ -40,7 +48,22 @@ import {
     createComment,
     updateComment,
     deleteComment,
+    createFile,
+    getFilesByOfferId,
+    getFileById,
+    deleteFile,
+    createLegacyOffer,
+    createTestCustomer,
+    createTestOffer,
 } from "../core/core.js";
+
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { promises as fs } from 'fs';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 
 // Import tags, tasks, files
@@ -168,6 +191,15 @@ export async function offerRoutes(fastify, options)
     fastify.delete("/:offer_id/delete", deleteOfferOptions, async (request, reply) =>
     {
         const offer_id = request.params.offer_id;
+        const offer = getOfferById(fastify, offer_id);
+        if (!offer) {
+            reply.code(404);
+            return { error: "Offer not found" };
+        }
+        if (offer.status !== "Draft" && offer.status !== "On Ice") {
+            reply.code(400);
+            return { error: "Offer can only be deleted in Draft or On Ice status" };
+        }
         const success = deleteOffer(fastify, offer_id);
         if (!success)
         {
@@ -188,6 +220,33 @@ export async function offerRoutes(fastify, options)
         }
         return {offer: offer};
     });
+
+    fastify.post("/legacy/create", legacyOfferOptions, async (request, reply) => {
+        const legacyData = request.body;
+
+       const offer = createLegacyOffer(fastify, legacyData);
+
+        if (!offer) {
+            reply.code(500);
+            return { error: "Could not create offer and comments from legacy data" };
+        }
+
+        // Create comments from hints
+        const hints = legacyData.xOffer.hints;
+        for (const hint of hints) {
+            const commentProperties = {
+                offer_id: offer.offer_id,
+                comment_text: hint,
+            };
+            const comment = createComment(fastify, commentProperties);
+            if (!comment) {
+                reply.code(500);
+                return { error: "Could not create comment from hint" };
+            }
+        }
+
+        reply.code(201).send({ offer: offer });
+    });
 }
 
 export async function commentRoutes(fastify, options)
@@ -206,6 +265,15 @@ export async function commentRoutes(fastify, options)
     fastify.post("/create", createCommentOptions, async (request, reply) =>
     {
         const commentProperties = request.body;
+        const offer = getOfferById(fastify, commentProperties.offer_id);
+        if (!offer) {
+            reply.code(404);
+            return { error: "Offer not found" };
+        }
+        if (offer.status === "Draft") {
+            reply.code(400);
+            return { error: "Cannot add comments to an offer in Draft status" };
+        }
         const comment = createComment(fastify, commentProperties);
         if (!comment)
         {
@@ -238,7 +306,7 @@ export async function commentRoutes(fastify, options)
         }
         return {comment: comment};
     });
-    fastify.delete("/:comment_id/delete", deleteCommentOptions, async (request, reply) =>
+    fastify.delete("/:comment_id/delete", deleteCommentOptions, async (request, reply) => //TODO: Implement deleteComment bruno error
     {
         const comment_id = request.params.comment_id;
         const success = deleteComment(fastify, comment_id);
@@ -251,8 +319,162 @@ export async function commentRoutes(fastify, options)
     });
 }
 
-export async function fileRoutes(fastify, options)
-{}
+//createFile
+//getFilesByOfferId
+//getFileById
+
+export async function fileRoutes(fastify, options) {
+    fastify.post('/upload/:offer_id', createFileOptions, async (request, reply) => {
+        const offer_id = parseInt(request.params.offer_id, 10); // Ensure offer_id is an integer
+        const data = await request.file();
+
+        if (!offer_id) {
+            return reply.status(400).send({ error: 'offer_id is required' });
+        }
+
+        if (data.mimetype !== 'text/plain') {
+            return reply.status(400).send({ error: 'Only .txt files are supported' });
+        }
+
+        // Create a placeholder fileInfo object
+        const fileInfo = {
+            offer_id: offer_id,
+            file_name: data.filename,
+            file_path: '' // Placeholder, will be updated after file creation
+        };
+
+        // Save fileInfo to your database to get the file_id
+        const createdFile = createFile(fastify, fileInfo);
+
+        if (!createdFile) {
+            return reply.status(500).send({ error: 'Could not save file information' });
+        }
+
+        // Use the file_id to create the file path
+        const filePath = path.join(__dirname, '../../assets', `${createdFile.file_id}.txt`);
+        try {
+            await fs.writeFile(filePath, await data.toBuffer());
+        } catch (error) {
+            fastify.log.error(error);
+            return reply.status(500).send({ error: 'Could not save file to disk' });
+        }
+
+        // Update file_path in the database
+        const updateStatement = fastify.db.prepare("UPDATE files SET file_path = ? WHERE file_id = ?");
+        updateStatement.run(filePath, createdFile.file_id);
+
+        // Update the createdFile object with the correct file_path
+        createdFile.file_path = filePath;
+
+        reply.code(201).send({file: createdFile});
+    });
+
+    fastify.get('/:offer_id', getFilesByOfferIdOptions, async (request, reply) => {
+        const offer_id = parseInt(request.params.offer_id, 10); // Ensure offer_id is an integer
+
+        // Fetch file information from your database based on offer_id
+        const files = getFilesByOfferId(fastify, offer_id);
+
+        if (!files) {
+            return reply.status(404).send({ error: 'No files found for this offer' });
+        }
+
+        reply.send(files);
+    });
+
+    fastify.get('/:file_id/content', getFileByIdOptions, async (request, reply) => {
+        const file_id = parseInt(request.params.file_id, 10); // Ensure file_id is an integer
+        const filePath = path.join(__dirname, '../../assets', `${file_id}.txt`);
+
+        try {
+            const fileContent = await fs.readFile(filePath, 'utf8');
+            reply.type('text/plain').send(fileContent);
+        } catch (error) {
+            reply.status(404).send({ error: 'File content not found' });
+        }
+    });
+
+    fastify.get('/:file_id/file', getFileByIdOptions, async (request, reply) => {
+        const file_id = parseInt(request.params.file_id, 10); // Ensure file_id is an integer
+        const file = getFileById(fastify, file_id);
+        if (!file) {
+            return reply.status(404).send({ error: 'File not found' });
+        }
+        reply.send({file: file});
+    });
+    fastify.delete('/:file_id/delete', deleteFileOptions, async (request, reply) => {
+        const file_id = parseInt(request.params.file_id, 10); // Ensure file_id is an integer
+        const file = getFileById(fastify, file_id);
+        if (!file) {
+            return reply.status(404).send({ error: 'File not found' });
+        }
+        const filePath = path.join(__dirname, '../../assets', `${file_id}.txt`);
+
+        try {
+            await fs.unlink(filePath);
+            deleteFile(fastify, file_id);
+            reply.send({message: 'File deleted'});
+        } catch (error) {
+            fastify.log.error(error);
+            reply.status(500).send({ error: 'Could not delete file' });
+        }
+    });
+}
+
+import { createTestcustomersOptions, createTestOfferOptions } from '../schemas/testSchemas.js';
+
+export function testRoutes(fastify, options) {
+    fastify.post("/customers", createTestcustomersOptions, async (request, reply) => {
+        const { customers } = request.body;
+
+        const createdCustomers = [];
+        for (const customer of customers) {
+            try {
+                const createdCustomer = await createTestCustomer(fastify, customer);
+                if (!createdCustomer) {
+                    return reply.status(500).send({ error: "Could not create test customer" });
+                }
+                createdCustomers.push(createdCustomer);
+            } catch (error) {
+                return reply.status(500).send({ error: "Could not create test customer" });
+            }
+        }
+
+        reply.code(201).send({ customers: createdCustomers });
+    });
+
+    fastify.post("/offers", createTestOfferOptions , async (request, reply) => {
+        const { customers, offers } = request.body;
+
+        const createdCustomers = [];
+        for (const customer of customers) {
+            try {
+                const createdCustomer = await createTestCustomer(fastify, customer);
+                if (!createdCustomer) {
+                    return reply.status(500).send({ error: "Could not create test customer" });
+                }
+                createdCustomers.push(createdCustomer);
+            } catch (error) {
+                return reply.status(500).send({ error: "Could not create test customer" });
+            }
+        }
+
+        const createdOffers = [];
+        for (const offer of offers) {
+            try {
+                const createdOffer = await createTestOffer(fastify, offer);
+                if (!createdOffer) {
+                    return reply.status(500).send({ error: "Could not create offer" });
+                }
+                createdOffers.push(createdOffer);
+            } catch (error) {
+                return reply.status(500).send({ error: "Could not create offer" });
+            }
+        }
+
+        reply.code(201).send({ customers: createdCustomers, offers: createdOffers });
+    });
+}
 
 export async function tagRoutes(fastify, options)
 {}

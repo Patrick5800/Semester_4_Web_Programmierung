@@ -4,10 +4,9 @@ export const createCommentOptions = {
             type: "object",
             properties: {
                 comment_text: { type: "string" },
-                created_by: { type: "string" },
                 offer_id: { type: "integer" },
             },
-            required: ["comment_text", "created_by", "offer_id"],
+            required: ["comment_text", "offer_id"],
         },
         response: {
             200: {

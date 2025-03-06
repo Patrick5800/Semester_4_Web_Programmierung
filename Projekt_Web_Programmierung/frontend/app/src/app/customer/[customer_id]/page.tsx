@@ -13,3 +13,10 @@ export default async function CustomerPage({
         </div>
     );
 }
+
+export function generateMetadata() {
+    return {
+      title: "Prismarine Solutions",
+      description: "Prismarine Solutions - Ihr Partner für individuelle Softwarelösungen",
+    };
+}

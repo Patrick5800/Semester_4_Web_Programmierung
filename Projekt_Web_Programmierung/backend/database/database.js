@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS comments
   comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
   offer_id INTEGER NOT NULL,
   comment_text TEXT NOT NULL,
-  created_by TEXT NOT NULL,
+  created_by TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT NULL,
   FOREIGN KEY (offer_id) REFERENCES offers(offer_id)

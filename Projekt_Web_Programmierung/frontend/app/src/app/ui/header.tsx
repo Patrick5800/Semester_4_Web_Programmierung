@@ -19,6 +19,7 @@ export default function Header() {
     const newRole = event.target.value;
     setRole(newRole);
     localStorage.setItem("role", newRole);
+    window.location.reload();
   };
 
   return (

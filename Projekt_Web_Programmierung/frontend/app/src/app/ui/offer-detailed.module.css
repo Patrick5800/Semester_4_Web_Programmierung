@@ -24,15 +24,16 @@
     background-color: #82ebba;
 }
 
-.updateButton {
+.crudButton {
     padding: 10px 20px;
     background-color: #82ebba85;
     color: rgb(0, 0, 0);
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    margin: 10px;
 }
 
-.updateButton:hover {
+.crudButton:hover {
     background-color: #82ebba;
 }

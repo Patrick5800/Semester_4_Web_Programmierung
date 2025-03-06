@@ -39,17 +39,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10px;
+  border-radius: 100px;
   padding: 10px;
-  background-color: #a10000;
-  color:#007bff;
-
+  color:#82ebba;
+  background-color: #f7f7f7;
 }
 
+
+se
 .dropdownOptions {
-  color:aquamarine;
+  color:82ebba;
   border-radius: 100px;
-  background-color: #a10000;
+  background-color: #f7f7f7;
 }
 
 .logo {

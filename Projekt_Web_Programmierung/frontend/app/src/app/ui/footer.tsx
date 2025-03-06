@@ -18,7 +18,7 @@ export default function Footer() {
         <span>     X</span></Link>
       </div>
       <div className={styles.links}>
-        <Link href="/impressum" className={styles.navlink}>Impressum</Link>
+        <Link href="/imprint" className={styles.navlink}>Impressum</Link>
         <Link href="/privacy" className={styles.navlink}>Datenschutz</Link>
       </div>
       <div className={styles.copyright}>
