@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import styles from "./offer-detailed.module.css";
-import { fetchOfferById, updateOffer, deleteOffer } from "../lib/api";
+import { fetchOfferById, updateOffer, deleteOffer, updateOfferStatus } from "../lib/api";
 import { useRouter } from "next/navigation";
 
 interface Offer {
@@ -14,7 +14,6 @@ interface Offer {
     status: string;
     created_at: string;
     updated_at: string;
-    commented: boolean; //für evtl übergabe ob kommentar vorhanden
 }
 
 interface OfferDetailedProps {
@@ -57,10 +56,15 @@ export default function OfferDetailed({ offer_id }: OfferDetailedProps) {
 
     const handleSaveClick = async () => {
         try {
-            await updateOffer(offer_id, offer);
-            setIsEditing(false);
+            if (offer) {
+                await updateOffer(offer_id, offer);
+                await updateOfferStatus(offer_id, offer.status);
+                alert("Offer and status updated successfully");
+                setIsEditing(false);
+            }
         } catch (error) {
-            console.error("Error updating offer:", error);
+            console.error("Error updating offer or status:", error);
+            alert("Error updating offer or status");
         }
     };
 
@@ -136,8 +140,8 @@ export default function OfferDetailed({ offer_id }: OfferDetailedProps) {
                                 </tr>
                             </tbody>
                         </table>
-                        <button className={styles.crudButton} onClick={handleSaveClick}>Speichern</button>
-                        <button className={styles.crudButton} onClick={handleCancelClick}>Abbrechen</button>
+                        <button type="button" className={styles.crudButton} onClick={handleSaveClick}>Speichern</button>
+                        <button type="button" className={styles.crudButton} onClick={handleCancelClick}>Abbrechen</button>
                     </form>
                 </div>
             ) : (

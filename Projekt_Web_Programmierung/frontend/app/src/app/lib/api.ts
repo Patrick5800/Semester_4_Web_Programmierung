@@ -149,6 +149,23 @@ export async function updateOffer(offer_id: number, offer: any) {
     }
 }
 
+export async function updateOfferStatus(offer_id: number, status: string) {
+    try {
+        const response = await fetch(`${BASE_URL}/offer/${offer_id}/status`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ status }),
+        });
+        if (!response.ok) {
+            throw new Error("Error updating offer status");
+        }
+    } catch (error) {
+        console.error("Error updating offer status:", error);
+    }
+}
+
 export async function deleteOffer(offer_id: number) {
     try {
         const response = await fetch(`${BASE_URL}/offer/${offer_id}/delete`, {
@@ -254,5 +271,55 @@ export async function deleteComment(comment_id: number) {
         }
     } catch (error) {
         console.error("Error deleting comment:", error);
+    }
+}
+
+// Document APIs
+export async function fetchDocumentsByOfferId(offer_id: number) {
+    try {
+        const response = await fetch(`${BASE_URL}/files/${offer_id}`);
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error("Error fetching documents");
+        }
+        if (!Array.isArray(data)) {
+            throw new Error("Expected an array of documents");
+        }
+        return data;
+    } catch (error) {
+        console.error("Error fetching documents:", error);
+        return [];
+    }
+}
+
+export async function deleteDocument(file_id: number) {
+    try {
+        const response = await fetch(`${BASE_URL}/files/${file_id}/delete`, {
+            method: "DELETE",
+        });
+        if (!response.ok) {
+            throw new Error("Error deleting document");
+        }
+    } catch (error) {
+        console.error("Error deleting document:", error);
+    }
+}
+
+export async function uploadDocument(file: File, offer_id: number) {
+    try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await fetch(`${BASE_URL}/files/upload/${offer_id}`, {
+            method: "POST",
+            body: formData,
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Error uploading document: ${errorText}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error uploading document:", error);
+        return null;
     }
 }

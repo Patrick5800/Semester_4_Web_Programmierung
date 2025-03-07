@@ -38,8 +38,15 @@ export default function OfferList() {
         router.push(`/offer/${offer_id}`);
     };
 
+    const handleCreateCustomerClick = () => {
+        router.push('/offer/create');
+    };
+
     return (
         <div className={styles["table-container"]}>
+            <button className={styles.createButton} onClick={handleCreateCustomerClick}>
+                Angebot erstellen
+            </button>
             <table>
                 <thead>
                     <tr>

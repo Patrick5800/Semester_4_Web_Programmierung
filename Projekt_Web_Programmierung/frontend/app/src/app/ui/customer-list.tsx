@@ -35,8 +35,15 @@ export default function CustomerList() {
         router.push(`/customer/${customer_id}`);
     };
 
+    const handleCreateCustomerClick = () => {
+        router.push('/customer/create');
+    };
+
     return (
         <div className={styles["table-container"]}>
+            <button className={styles.createButton} onClick={handleCreateCustomerClick}>
+                Kunde erstellen
+            </button>
             <table>
                 <thead>
                     <tr>

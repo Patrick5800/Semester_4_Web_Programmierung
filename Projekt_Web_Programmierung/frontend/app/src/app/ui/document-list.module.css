@@ -1,0 +1,111 @@
+.tableContainer {
+    width: 80%;
+    margin: 100px auto;
+    border-collapse: collapse;
+    border: 3px solid #ffffff;
+    border-radius: 5px;
+    box-shadow: 0px 0px 20px 0px #00000033;
+}
+
+.tableContainer table {
+    width: 100%;
+    border: 0px solid #ddd;
+}
+
+.tableContainer th, .tableContainer td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-left : 1px solid #ddd;
+}
+
+.tableContainer th {
+    background-color: #82ebba;
+}
+
+.tableContainer tr:hover {
+    background-color: #82ebba88;
+}
+
+.crudButton {
+    padding: 10px 20px;
+    background-color: #82ebba85;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.crudButton:hover {
+    background-color: #82ebba;
+}
+
+.row {
+    cursor: pointer;
+}
+
+.selectedRow {
+    background-color: #82ebba88;
+    cursor: pointer;
+}
+
+.documentListContainer {
+    width: 80%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.documentItem {
+    display: flex;
+    align-items: center;
+    vertical-align: middle;
+    margin: 15px;
+}
+
+.documentItem a {
+    margin-right: 10px;
+    color: #0070f3;
+    text-decoration: none;
+}
+
+.documentItem a:hover {
+    text-decoration: underline;
+}
+
+.deleteButton {
+    padding: 5px 10px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.deleteButton:hover {
+    background-color: #ff1a1a;
+}
+
+/* Hide the original file input */
+.fileSelect {
+    display: none;
+}
+
+/* Style the label to look like the crudButton */
+.fileSelect + label {
+    padding: 10px 20px;
+    background-color: #82ebba85;
+    color: rgb(0, 0, 0);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+    display: inline-block;
+}
+
+.fileSelect + label:hover {
+    background-color: #82ebba;
+}

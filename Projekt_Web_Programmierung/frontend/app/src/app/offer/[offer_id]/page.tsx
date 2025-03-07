@@ -1,5 +1,6 @@
 import OfferDetailed from '../../ui/offer-detailed';
 import CommentList from "../../ui/comment-list";
+import DocumentList from "../../ui/document-list";
 
 export default async function OfferPage({
     params,
@@ -12,6 +13,7 @@ export default async function OfferPage({
         <div>
             <OfferDetailed offer_id={offer_id}></OfferDetailed>
             <CommentList offer_id={offer_id}></CommentList>
+            <DocumentList offer_id={offer_id}></DocumentList>
         </div>
     );
 }

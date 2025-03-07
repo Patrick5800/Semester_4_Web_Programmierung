@@ -7,8 +7,6 @@ export const createOfferOptions = {
                 name: { type: "string" },
                 price: { type: "number" },
                 currency: { type: "string" },
-                status: { type: "string", enum: ["Draft", "In Progress", "Active", "On Ice"] },
-                hints: { type: "array", items: { type: "string" } },
             },
             required: ["customer_id", "name"],
         },

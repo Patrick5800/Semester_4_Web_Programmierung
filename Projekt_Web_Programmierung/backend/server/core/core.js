@@ -114,7 +114,7 @@ function createOffer(fastify, offerProperties) {
         name: offerProperties.name,
         price: offerProperties.price,
         currency: offerProperties.currency,
-        status: offerProperties.status,
+        status: "Draft",
     };
 
     try {
