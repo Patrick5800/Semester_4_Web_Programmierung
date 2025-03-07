@@ -16,19 +16,34 @@ interface Customer {
 export default function CustomerList() {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
         async function loadCustomers() {
-            const data = await fetchAllCustomers();
-            setCustomers(data);
-            setLoading(false);
+            try {
+                const data = await fetchAllCustomers();
+                if (Array.isArray(data)) {
+                    setCustomers(data);
+                } else {
+                    setError("Unexpected data format");
+                }
+            } catch (error) {
+                setError("Error fetching customers");
+                console.error("Error fetching customers:", error);
+            } finally {
+                setLoading(false);
+            }
         }
         loadCustomers();
     }, []);
 
     if (loading) {
         return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
     }
 
     const handleRowClick = (customer_id: number) => {
@@ -39,11 +54,15 @@ export default function CustomerList() {
         router.push('/customer/create');
     };
 
+    const role = localStorage.getItem("role");
+
     return (
         <div className={styles["table-container"]}>
-            <button className={styles.createButton} onClick={handleCreateCustomerClick}>
-                Kunde erstellen
-            </button>
+            {(role === "Account-Manager" || role === "Developer") && (
+                <button className={styles.createButton} onClick={handleCreateCustomerClick}>
+                    Kunde erstellen
+                </button>
+            )}
             <table>
                 <thead>
                     <tr>

@@ -80,6 +80,8 @@ export default function CustomerDetailed({ customer_id }: CustomerDetailedProps)
         router.refresh();
     };
 
+    const role = localStorage.getItem("role");
+
     return (
         <div className={styles.tableContainer}>
             {isEditing ? (
@@ -169,8 +171,12 @@ export default function CustomerDetailed({ customer_id }: CustomerDetailedProps)
                             </tr>
                         </tbody>
                     </table>
-                    <button className={styles.crudButton} onClick={() => setIsEditing(true)}>Bearbeiten</button>
-                    <button className={styles.crudButton} onClick={() => handleDeleteButtonClick(customer.customer_id)}>Löschen</button>
+                    {(role === "Account-Manager" || role === "Developer") && (
+                        <>
+                            <button className={styles.crudButton} onClick={() => setIsEditing(true)}>Bearbeiten</button>
+                            <button className={styles.crudButton} onClick={() => handleDeleteButtonClick(customer.customer_id)}>Löschen</button>
+                        </>
+                    )}
                 </div>
             )}
         </div>

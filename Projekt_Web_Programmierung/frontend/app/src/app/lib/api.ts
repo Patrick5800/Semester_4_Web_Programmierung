@@ -1,13 +1,23 @@
 export const BASE_URL = "http://localhost:8080";
 
+// Helper function to get the Authorization header
+function getAuthorizationHeader() {
+    const role = localStorage.getItem("role");
+    return role ? `Basic ${role}` : "";
+}
+
 // Customer APIs
 export async function fetchAllCustomers() {
     try {
-        const response = await fetch(`${BASE_URL}/customer/all`);
+        const response = await fetch(`${BASE_URL}/customer/all`, {
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
+        });
         const data = await response.json();
         if (!response.ok) {
             throw new Error("Error fetching customers");
-        } 
+        }
         if (!Array.isArray(data)) {
             throw new Error("Expected an array of customers");
         }
@@ -20,7 +30,11 @@ export async function fetchAllCustomers() {
 
 export async function fetchCustomerById(customer_id: number) {
     try {
-        const response = await fetch(`${BASE_URL}/customer/${customer_id}`);
+        const response = await fetch(`${BASE_URL}/customer/${customer_id}`, {
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
+        });
         const data = await response.json();
         if (!response.ok) {
             throw new Error("Error fetching customer");
@@ -38,6 +52,7 @@ export async function createCustomer(customer: any) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": getAuthorizationHeader(),
             },
             body: JSON.stringify(customer),
         });
@@ -57,6 +72,7 @@ export async function updateCustomer(customer_id: number, customer: any) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": getAuthorizationHeader(),
             },
             body: JSON.stringify(customer),
         });
@@ -72,6 +88,9 @@ export async function deleteCustomer(customer_id: number) {
     try {
         const response = await fetch(`${BASE_URL}/customer/${customer_id}/delete`, {
             method: "DELETE",
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
         });
         if (!response.ok) {
             throw new Error("Error deleting customer");
@@ -84,7 +103,11 @@ export async function deleteCustomer(customer_id: number) {
 // Offer APIs
 export async function fetchAllOffers() {
     try {
-        const response = await fetch(`${BASE_URL}/offer/all`);
+        const response = await fetch(`${BASE_URL}/offer/all`, {
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
+        });
         const data = await response.json();
         if (!response.ok) {
             throw new Error("Error fetching offers");
@@ -101,7 +124,11 @@ export async function fetchAllOffers() {
 
 export async function fetchOfferById(offer_id: number) {
     try {
-        const response = await fetch(`${BASE_URL}/offer/${offer_id}/offer`);
+        const response = await fetch(`${BASE_URL}/offer/${offer_id}/offer`, {
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
+        });
         const data = await response.json();
         if (!response.ok) {
             throw new Error("Error fetching offer");
@@ -119,6 +146,7 @@ export async function createOffer(offer: any) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": getAuthorizationHeader(),
             },
             body: JSON.stringify(offer),
         });
@@ -138,6 +166,7 @@ export async function updateOffer(offer_id: number, offer: any) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": getAuthorizationHeader(),
             },
             body: JSON.stringify(offer),
         });
@@ -155,6 +184,7 @@ export async function updateOfferStatus(offer_id: number, status: string) {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": getAuthorizationHeader(),
             },
             body: JSON.stringify({ status }),
         });
@@ -170,6 +200,9 @@ export async function deleteOffer(offer_id: number) {
     try {
         const response = await fetch(`${BASE_URL}/offer/${offer_id}/delete`, {
             method: "DELETE",
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
         });
         if (!response.ok) {
             throw new Error("Error deleting offer");
@@ -182,7 +215,11 @@ export async function deleteOffer(offer_id: number) {
 // Comment APIs
 export async function fetchAllComments() {
     try {
-        const response = await fetch(`${BASE_URL}/comment/all`);
+        const response = await fetch(`${BASE_URL}/comment/all`, {
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
+        });
         const data = await response.json();
         if (!response.ok) {
             throw new Error("Error fetching comments");
@@ -199,7 +236,11 @@ export async function fetchAllComments() {
 
 export async function fetchCommentById(comment_id: number) {
     try {
-        const response = await fetch(`${BASE_URL}/comment/${comment_id}`);
+        const response = await fetch(`${BASE_URL}/comment/${comment_id}`, {
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
+        });
         const data = await response.json();
         if (!response.ok) {
             throw new Error("Error fetching comment");
@@ -217,6 +258,7 @@ export async function createComment(comment: any) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": getAuthorizationHeader(),
             },
             body: JSON.stringify(comment),
         });
@@ -236,6 +278,7 @@ export async function updateComment(comment_id: number, comment: any) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "Authorization": getAuthorizationHeader(),
             },
             body: JSON.stringify(comment),
         });
@@ -249,7 +292,11 @@ export async function updateComment(comment_id: number, comment: any) {
 
 export async function getCommentsByOfferId(offer_id: number) {
     try {
-        const response = await fetch(`${BASE_URL}/comment/${offer_id}/comment`);
+        const response = await fetch(`${BASE_URL}/comment/${offer_id}/comment`, {
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
+        });
         const data = await response.json();
         if (!response.ok) {
             throw new Error("Error fetching comments by offer id");
@@ -265,6 +312,9 @@ export async function deleteComment(comment_id: number) {
     try {
         const response = await fetch(`${BASE_URL}/comment/${comment_id}/delete`, {
             method: "DELETE",
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
         });
         if (!response.ok) {
             throw new Error("Error deleting comment");
@@ -277,7 +327,11 @@ export async function deleteComment(comment_id: number) {
 // Document APIs
 export async function fetchDocumentsByOfferId(offer_id: number) {
     try {
-        const response = await fetch(`${BASE_URL}/files/${offer_id}`);
+        const response = await fetch(`${BASE_URL}/files/${offer_id}`, {
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
+        });
         const data = await response.json();
         if (!response.ok) {
             throw new Error("Error fetching documents");
@@ -296,6 +350,9 @@ export async function deleteDocument(file_id: number) {
     try {
         const response = await fetch(`${BASE_URL}/files/${file_id}/delete`, {
             method: "DELETE",
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
         });
         if (!response.ok) {
             throw new Error("Error deleting document");
@@ -311,6 +368,9 @@ export async function uploadDocument(file: File, offer_id: number) {
         formData.append("file", file);
         const response = await fetch(`${BASE_URL}/files/upload/${offer_id}`, {
             method: "POST",
+            headers: {
+                "Authorization": getAuthorizationHeader(),
+            },
             body: formData,
         });
         if (!response.ok) {

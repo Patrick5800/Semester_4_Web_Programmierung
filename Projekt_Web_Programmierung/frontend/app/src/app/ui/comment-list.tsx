@@ -31,8 +31,9 @@ export default function CommentList({ offer_id }: CommentListProps) {
     const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
     const router = useRouter();
     const [commentToCreate, setCommentToCreate] = useState<CreateComment>({
-            offer_id: offer_id,
-            comment_text: "",});
+        offer_id: offer_id,
+        comment_text: "",
+    });
 
     useEffect(() => {
         loadComments();
@@ -60,8 +61,7 @@ export default function CommentList({ offer_id }: CommentListProps) {
     const handleCommentButtonClick = () => {
         if (hasSelected) {
             alert("Bitte deselektieren sie den ausgewählten Kommentar, bevor Sie einen neuen erstellen.");
-        }
-        else {
+        } else {
             setIsEditing(false);
             setIsCreating(true);
         }
@@ -69,11 +69,11 @@ export default function CommentList({ offer_id }: CommentListProps) {
 
     const handleRowClick = (comment: Comment) => {
         if (selectedComment !== null && selectedComment.comment_id === comment.comment_id) {
-            setHasSelected(false)
-            setSelectedComment(null);}
-        else {
+            setHasSelected(false);
+            setSelectedComment(null);
+        } else {
             setSelectedComment(comment);
-            setHasSelected(true); // selcomment ungleich null und !has selected
+            setHasSelected(true);
         }
     };
 
@@ -85,7 +85,7 @@ export default function CommentList({ offer_id }: CommentListProps) {
             });
         } else {
             setSelectedComment({
-                comment_id: 0, // oder eine andere Standard-ID
+                comment_id: 0,
                 offer_id: offer_id,
                 comment_text: e.target.value,
                 created_at: new Date().toISOString(),
@@ -93,28 +93,29 @@ export default function CommentList({ offer_id }: CommentListProps) {
             });
         }
     };
+
     const handleInputChangeCreate = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCommentToCreate({
             ...commentToCreate,
             comment_text: e.target.value,
         });
-    }
+    };
 
-    const handleSaveClick = async () => {
+    const handleSaveClick = async () => { //ERROR
         if (isEditing && selectedComment && hasSelected) {
             try {
                 await updateComment(selectedComment.comment_id, selectedComment);
                 loadComments();
                 setIsEditing(false);
             } catch (error) {
-                console.error("Error updating comment:", error);
+                console.error("Error updating comment:", error); //<-- Error here
             }
         }
         if (isCreating && commentToCreate) {
             try {
-               await createComment(commentToCreate);
-               loadComments();
-               setIsCreating(false);
+                await createComment(commentToCreate);
+                loadComments();
+                setIsCreating(false);
             } catch (error) {
                 console.error("Error creating comment:", error);
             }
@@ -132,8 +133,7 @@ export default function CommentList({ offer_id }: CommentListProps) {
     };
 
     const handleEditButtonClick = () => {
-        if (hasSelected)
-        {
+        if (hasSelected) {
             setIsCreating(false);
             setIsEditing(true);
         } else {
@@ -155,7 +155,9 @@ export default function CommentList({ offer_id }: CommentListProps) {
         } else {
             alert("Bitte wählen Sie einen Kommentar aus, den Sie löschen möchten.");
         }
-    }
+    };
+
+    const role = localStorage.getItem("role");
 
     return (
         <div className={styles.tableContainer}>
@@ -190,65 +192,71 @@ export default function CommentList({ offer_id }: CommentListProps) {
                     <button className={styles.crudButton} onClick={handleCancelClick}>Cancel</button>
                 </div>
             ) : null}
-            {isCreating && !hasSelected? (
+            {isCreating && !hasSelected ? (
                 <div>
-                <form>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th colSpan={5}>Kommentar bearbeiten</th>
-                            </tr>
-                            <tr>
-                                <th>Text</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><input type="text" name="comment_text" value={commentToCreate.comment_text} onChange={handleInputChangeCreate} /></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </form>
-                <button className={styles.crudButton} onClick={handleSaveClick}>Speichern</button>
-                <button className={styles.crudButton} onClick={handleCancelClick}>Abbrechen</button>
-            </div>
+                    <form>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colSpan={5}>Kommentar erstellen</th>
+                                </tr>
+                                <tr>
+                                    <th>Text</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" name="comment_text" value={commentToCreate.comment_text} onChange={handleInputChangeCreate} /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                    <button className={styles.crudButton} onClick={handleSaveClick}>Speichern</button>
+                    <button className={styles.crudButton} onClick={handleCancelClick}>Abbrechen</button>
+                </div>
             ) : null}
             {!(selectedComment !== null && isEditing && hasSelected) && !(isCreating && !hasSelected) ? (
                 <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Offer-ID</th>
-                            <th>Text</th>
-                            <th>Created at</th>
-                            <th>Updated at</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {Array.isArray(comments) && comments.length > 0 ? (
-                            comments.map((comment) => (
-                                <tr key={comment.comment_id} 
-                                className={handlerowStyle(comment)} 
-                                onClick={() => handleRowClick(comment)}>
-                                    <td>{comment.comment_id}</td>
-                                    <td>{comment.offer_id}</td>
-                                    <td>{comment.comment_text}</td>
-                                    <td>{comment.created_at}</td>
-                                    <td>{comment.updated_at}</td>
-                                </tr>
-                            ))
-                        ) : (
+                    <table>
+                        <thead>
                             <tr>
-                                <td colSpan={6}>No comments available</td>
+                                <th>ID</th>
+                                <th>Offer-ID</th>
+                                <th>Text</th>
+                                <th>Created at</th>
+                                <th>Updated at</th>
                             </tr>
-                        )}
-                    </tbody>
-                </table>
-            <button className={styles.crudButton} onClick={handleCommentButtonClick}>Kommentieren</button>
-            <button className={styles.crudButton} onClick={handleEditButtonClick}>Kommentar ändern</button>
-            <button className={styles.crudButton} onClick={handleDeleteButtonClick}>Kommentar löschen</button>
-            </div>
+                        </thead>
+                        <tbody>
+                            {Array.isArray(comments) && comments.length > 0 ? (
+                                comments.map((comment) => (
+                                    <tr key={comment.comment_id}
+                                        className={handlerowStyle(comment)}
+                                        onClick={() => handleRowClick(comment)}>
+                                        <td>{comment.comment_id}</td>
+                                        <td>{comment.offer_id}</td>
+                                        <td>{comment.comment_text}</td>
+                                        <td>{comment.created_at}</td>
+                                        <td>{comment.updated_at}</td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={6}>No comments available</td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                    {(role === "Account-Manager" || role === "Developer" || role === "User") && (
+                        <button className={styles.crudButton} onClick={handleCommentButtonClick}>Kommentieren</button>
+                    )}
+                    {(role === "Account-Manager" || role === "Developer") && (
+                        <>
+                            <button className={styles.crudButton} onClick={handleEditButtonClick}>Kommentar ändern</button>
+                            <button className={styles.crudButton} onClick={handleDeleteButtonClick}>Kommentar löschen</button>
+                        </>
+                    )}
+                </div>
             ) : null}
         </div>
     );

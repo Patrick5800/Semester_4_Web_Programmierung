@@ -86,6 +86,13 @@ export default function DocumentList({ offer_id }: DocumentListProps) {
 
     return (
         <div className={styles.tableContainer}>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dokumente</th>
+                    </tr>
+                </thead>
+            </table>
             <div>
                 <input type="file" id="fileSelect" className={styles.fileSelect} onChange={handleFileChange} />
                 <label htmlFor="fileSelect" className={styles.crudButton}>Datei auswählen</label>

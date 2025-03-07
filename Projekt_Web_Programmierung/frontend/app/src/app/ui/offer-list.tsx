@@ -38,15 +38,19 @@ export default function OfferList() {
         router.push(`/offer/${offer_id}`);
     };
 
-    const handleCreateCustomerClick = () => {
+    const handleCreateOfferClick = () => {
         router.push('/offer/create');
     };
 
+    const role = localStorage.getItem("role");
+
     return (
         <div className={styles["table-container"]}>
-            <button className={styles.createButton} onClick={handleCreateCustomerClick}>
-                Angebot erstellen
-            </button>
+            {(role === "Account-Manager" || role === "Developer") && (
+                <button className={styles.createButton} onClick={handleCreateOfferClick}>
+                    Angebot erstellen
+                </button>
+            )}
             <table>
                 <thead>
                     <tr>
@@ -72,7 +76,7 @@ export default function OfferList() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={6}>No offers available</td>
+                            <td colSpan={6}>Keine Angebote verfügbar</td>
                         </tr>
                     )}
                 </tbody>

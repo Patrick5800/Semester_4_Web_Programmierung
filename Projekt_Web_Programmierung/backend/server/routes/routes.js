@@ -57,7 +57,7 @@ import {
     createTestOffer,
 } from "../core/core.js";
 
-import { authorize } from '../../authorization/authorization.js';
+import { authorize } from '../authorization/authorization.js';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -67,7 +67,6 @@ import path from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-
 // Import tags, tasks, files
 
 /*
@@ -76,10 +75,8 @@ In customerRoutes sind folgende Routen definiert:
 - Create a customer
 */
 
-export async function customerRoutes(fastify, options) 
-{
-    fastify.get("/all", getCustomersOptions, async (request, reply) => 
-    {
+export async function customerRoutes(fastify, options) {
+    fastify.get("/all", { preHandler: authorize(['Account-Manager', 'Developer', 'User']), schema: getCustomersOptions }, async (request, reply) => {
         const filters = request.query;
         const customers = getCustomers(fastify, filters);
         if (!customers) {
@@ -88,64 +85,58 @@ export async function customerRoutes(fastify, options)
         }
         return customers;
     });
-    fastify.post("/create", createCustomerOptions, async (request, reply) =>
-    {
+
+    fastify.post("/create", { preHandler: authorize(['Account-Manager', 'Developer']), schema: createCustomerOptions }, async (request, reply) => {
         const customerProperties = request.body;
         const customer = createCustomer(fastify, customerProperties);
-        if (!customer)
-        {
+        if (!customer) {
             reply.code(500);
-            return {error: "Could not create customer"};
+            return { error: "Could not create customer" };
         }
         reply.code(201);
-        return {customer: customer};
-    })
-    fastify.get("/:customer_id", getCustomerByIdOptions, async (request, reply) => 
-    {
+        return { customer: customer };
+    });
+
+    fastify.get("/:customer_id", { preHandler: authorize(['Account-Manager', 'Developer', 'User']), schema: getCustomerByIdOptions }, async (request, reply) => {
         const customer_id = request.params.customer_id;
         const customer = getCustomerById(fastify, customer_id);
-        if (!customer)
-        {
+        if (!customer) {
             reply.code(404);
-            return {error: "Customer not found"};
+            return { error: "Customer not found" };
         }
-        return {customer: customer};
+        return { customer: customer };
     });
-    fastify.post("/:customer_id/update", updateCustomerOptions, async (request, reply) =>
-    {
+
+    fastify.post("/:customer_id/update", { preHandler: authorize(['Account-Manager', 'Developer']), schema: updateCustomerOptions }, async (request, reply) => {
         const customer_id = request.params.customer_id;
         const customerProperties = request.body;
         const customer = updateCustomer(fastify, customer_id, customerProperties);
-        if (!customer)
-        {
+        if (!customer) {
             reply.code(500);
-            return {error: "Could not update customer"};
+            return { error: "Could not update customer" };
         }
-        return {customer: customer};
+        return { customer: customer };
     });
-    fastify.delete("/:customer_id/delete", deleteCustomerOptions, async (request, reply) =>
-    {
+
+    fastify.delete("/:customer_id/delete", { preHandler: authorize(['Account-Manager', 'Developer']), schema: deleteCustomerOptions }, async (request, reply) => {
         const customer_id = request.params.customer_id;
         const success = deleteCustomer(fastify, customer_id);
-        if (!success)
-        {
+        if (!success) {
             reply.code(500);
-            return {error: "Could not delete customer"};
+            return { error: "Could not delete customer" };
         }
-        return {message: "Customer deleted"};
+        return { message: "Customer deleted" };
     });
 }
 
 /*
-In offferRoutes sind folgende Routen definiert:
+In offerRoutes sind folgende Routen definiert:
 - Get all offers
 - Create an offer
 */
 
-export async function offerRoutes(fastify, options) 
-{
-    fastify.get("/all", getOffersOptions, async (request, reply) => 
-    {
+export async function offerRoutes(fastify, options) {
+    fastify.get("/all", { preHandler: authorize(['Account-Manager', 'Developer', 'User']), schema: getOffersOptions }, async (request, reply) => {
         const filters = request.query;
         const offers = getOffers(fastify, filters);
         if (!offers) {
@@ -154,44 +145,40 @@ export async function offerRoutes(fastify, options)
         }
         return offers;
     });
-    
-    fastify.post("/create", createOfferOptions, async (request, reply) =>
-    {
+
+    fastify.post("/create", { preHandler: authorize(['Account-Manager', 'Developer']), schema: createOfferOptions }, async (request, reply) => {
         const offerProperties = request.body;
         const offer = createOffer(fastify, offerProperties);
-        if (!offer)
-        {
+        if (!offer) {
             reply.code(500);
-            return {error: "Could not create offer"};
+            return { error: "Could not create offer" };
         }
         reply.code(201);
-        return {offer: offer};
+        return { offer: offer };
     });
-    fastify.get("/:offer_id/offer", getOfferByIdOptions, async (request, reply) =>
-    {
+
+    fastify.get("/:offer_id/offer", { preHandler: authorize(['Account-Manager', 'Developer', 'User']), schema: getOfferByIdOptions }, async (request, reply) => {
         const offer_id = request.params.offer_id;
         const offer = getOfferById(fastify, offer_id);
-        if (!offer)
-        {
+        if (!offer) {
             reply.code(404);
-            return {error: "Offer not found"};
+            return { error: "Offer not found" };
         }
-        return {offer: offer};
+        return { offer: offer };
     });
-    fastify.post("/:offer_id/update", updateOfferOptions, async (request, reply) =>
-    {
+
+    fastify.post("/:offer_id/update", { preHandler: authorize(['Account-Manager', 'Developer']), schema: updateOfferOptions }, async (request, reply) => {
         const offer_id = request.params.offer_id;
         const offerProperties = request.body;
         const offer = updateOffer(fastify, offer_id, offerProperties);
-        if (!offer)
-        {
+        if (!offer) {
             reply.code(500);
-            return {error: "Could not update offer"};
+            return { error: "Could not update offer" };
         }
-        return {offer: offer};
+        return { offer: offer };
     });
-    fastify.delete("/:offer_id/delete", deleteOfferOptions, async (request, reply) =>
-    {
+
+    fastify.delete("/:offer_id/delete", { preHandler: authorize(['Account-Manager', 'Developer']), schema: deleteOfferOptions }, async (request, reply) => {
         const offer_id = request.params.offer_id;
         const offer = getOfferById(fastify, offer_id);
         if (!offer) {
@@ -203,30 +190,28 @@ export async function offerRoutes(fastify, options)
             return { error: "Offer can only be deleted in Draft or On Ice status" };
         }
         const success = deleteOffer(fastify, offer_id);
-        if (!success)
-        {
+        if (!success) {
             reply.code(500);
-            return {error: "Could not delete offer"};
+            return { error: "Could not delete offer" };
         }
-        return {message: "Offer deleted"};
+        return { message: "Offer deleted" };
     });
-    fastify.patch("/:offer_id/status", changeOfferStatusOptions, async (request, reply) =>
-    {
+
+    fastify.patch("/:offer_id/status", { preHandler: authorize(['Account-Manager', 'Developer', 'User']), schema: changeOfferStatusOptions }, async (request, reply) => {
         const offer_id = request.params.offer_id;
         const status = request.body.status;
         const offer = changeOfferStatus(fastify, offer_id, status);
-        if (!offer)
-        {
+        if (!offer) {
             reply.code(500);
-            return {error: "Could not change status"};
+            return { error: "Could not change status" };
         }
-        return {offer: offer};
+        return { offer: offer };
     });
 
     fastify.post("/legacy/create", legacyOfferOptions, async (request, reply) => {
         const legacyData = request.body;
 
-       const offer = createLegacyOffer(fastify, legacyData);
+        const offer = createLegacyOffer(fastify, legacyData);
 
         if (!offer) {
             reply.code(500);
@@ -251,21 +236,18 @@ export async function offerRoutes(fastify, options)
     });
 }
 
-export async function commentRoutes(fastify, options)
-{
-    fastify.get("/:offer_id/comment", getCommentsByOfferIdOptions, async (request, reply) =>
-    {
+export async function commentRoutes(fastify, options) {
+    fastify.get("/:offer_id/comment", { preHandler: authorize(['Account-Manager', 'Developer', 'User']), schema: getCommentsByOfferIdOptions }, async (request, reply) => {
         const offer_id = request.params.offer_id;
         const comments = getCommentsByOfferId(fastify, offer_id);
-        if (!comments)
-        {
+        if (!comments) {
             reply.code(404);
-            return {error: "No comments found"};
+            return { error: "No comments found" };
         }
         return comments;
     });
-    fastify.post("/create", createCommentOptions, async (request, reply) =>
-    {
+
+    fastify.post("/create", { preHandler: authorize(['Account-Manager', 'Developer', 'User']), schema: createCommentOptions }, async (request, reply) => {
         const commentProperties = request.body;
         const offer = getOfferById(fastify, commentProperties.offer_id);
         if (!offer) {
@@ -277,47 +259,43 @@ export async function commentRoutes(fastify, options)
             return { error: "Cannot add comments to an offer in Draft status" };
         }
         const comment = createComment(fastify, commentProperties);
-        if (!comment)
-        {
+        if (!comment) {
             reply.code(500);
-            return {error: "Could not create comment"};
+            return { error: "Could not create comment" };
         }
         reply.code(201);
-        return {comment: comment};
+        return { comment: comment };
     });
-    fastify.get("/:comment_id", getCommentByIdOptions, async (request, reply) =>
-    {
+
+    fastify.get("/:comment_id", { preHandler: authorize(['Account-Manager', 'Developer', 'User']), schema: getCommentByIdOptions }, async (request, reply) => {
         const comment_id = request.params.comment_id;
         const comment = getCommentById(fastify, comment_id);
-        if (!comment)
-        {
+        if (!comment) {
             reply.code(404);
-            return {error: "Comment not found"};
+            return { error: "Comment not found" };
         }
-        return {comment: comment};
+        return { comment: comment };
     });
-    fastify.post("/:comment_id/update", updateCommentOptions, async (request, reply) =>
-    {
+
+    fastify.post("/:comment_id/update", { preHandler: authorize(['Account-Manager', 'Developer']), schema: updateCommentOptions }, async (request, reply) => {
         const comment_id = request.params.comment_id;
         const commentProperties = request.body;
         const comment = updateComment(fastify, comment_id, commentProperties);
-        if (!comment)
-        {
+        if (!comment) {
             reply.code(500);
-            return {error: "Could not update comment"};
+            return { error: "Could not update comment" };
         }
-        return {comment: comment};
+        return { comment: comment };
     });
-    fastify.delete("/:comment_id/delete", deleteCommentOptions, async (request, reply) => //TODO: Implement deleteComment bruno error
-    {
+
+    fastify.delete("/:comment_id/delete", { preHandler: authorize(['Account-Manager', 'Developer']), schema: deleteCommentOptions }, async (request, reply) => {
         const comment_id = request.params.comment_id;
         const success = deleteComment(fastify, comment_id);
-        if (!success)
-        {
+        if (!success) {
             reply.code(500);
-            return {error: "Could not delete comment"};
+            return { error: "Could not delete comment" };
         }
-        return {message: "Comment deleted"};
+        return { message: "Comment deleted" };
     });
 }
 
@@ -368,7 +346,7 @@ export async function fileRoutes(fastify, options) {
         // Update the createdFile object with the correct file_path
         createdFile.file_path = filePath;
 
-        reply.code(201).send({file: createdFile});
+        reply.code(201).send({ file: createdFile });
     });
 
     fastify.get('/:offer_id', getFilesByOfferIdOptions, async (request, reply) => {
@@ -402,8 +380,9 @@ export async function fileRoutes(fastify, options) {
         if (!file) {
             return reply.status(404).send({ error: 'File not found' });
         }
-        reply.send({file: file});
+        reply.send({ file: file });
     });
+
     fastify.delete('/:file_id/delete', deleteFileOptions, async (request, reply) => {
         const file_id = parseInt(request.params.file_id, 10); // Ensure file_id is an integer
         const file = getFileById(fastify, file_id);
@@ -415,7 +394,7 @@ export async function fileRoutes(fastify, options) {
         try {
             await fs.unlink(filePath);
             deleteFile(fastify, file_id);
-            reply.send({message: 'File deleted'});
+            reply.send({ message: 'File deleted' });
         } catch (error) {
             fastify.log.error(error);
             reply.status(500).send({ error: 'Could not delete file' });
@@ -445,7 +424,7 @@ export function testRoutes(fastify, options) {
         reply.code(201).send({ customers: createdCustomers });
     });
 
-    fastify.post("/offers", createTestOfferOptions , async (request, reply) => {
+    fastify.post("/offers", createTestOfferOptions, async (request, reply) => {
         const { customers, offers } = request.body;
 
         const createdCustomers = [];
@@ -478,8 +457,6 @@ export function testRoutes(fastify, options) {
     });
 }
 
-export async function tagRoutes(fastify, options)
-{}
+export async function tagRoutes(fastify, options) {}
 
-export async function taskRoutes(fastify, options)
-{}
+export async function taskRoutes(fastify, options) {}
