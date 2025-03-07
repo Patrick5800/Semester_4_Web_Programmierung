@@ -1,9 +1,21 @@
 // CRUD-Funktionen für die Customer-Tabelle
-function getCustomers(fastify) {
-    const statement = fastify.db.prepare("SELECT * FROM customers");
+function getCustomers(fastify, filters) {
+    let query = "SELECT * FROM customers WHERE 1=1";
+    const params = [];
+
+    if (filters.name) {
+        query += " AND name LIKE ?";
+        params.push(`%${filters.name}%`);
+    }
+    if (filters.address) {
+        query += " AND address LIKE ?";
+        params.push(`%${filters.address}%`);
+    }
+
+    const statement = fastify.db.prepare(query);
 
     try {
-        const customers = statement.all();
+        const customers = statement.all(...params);
         return customers;
     } catch (error) {
         fastify.log.error(error);
@@ -81,11 +93,27 @@ function deleteCustomer(fastify, customer_id) {
 
 // CRUD-Funktionen für die Offer-Tabelle
 
-function getOffers(fastify) {
-    const statement = fastify.db.prepare("SELECT * FROM offers");
+function getOffers(fastify, filters) {
+    let query = "SELECT * FROM offers WHERE 1=1";
+    const params = [];
+
+    if (filters.customer_id) {
+        query += " AND customer_id = ?";
+        params.push(filters.customer_id);
+    }
+    if (filters.name) {
+        query += " AND name LIKE ?";
+        params.push(`%${filters.name}%`);
+    }
+    if (filters.status) {
+        query += " AND status = ?";
+        params.push(filters.status);
+    }
+
+    const statement = fastify.db.prepare(query);
 
     try {
-        const offers = statement.all();
+        const offers = statement.all(...params);
         return offers;
     } catch (error) {
         fastify.log.error(error);

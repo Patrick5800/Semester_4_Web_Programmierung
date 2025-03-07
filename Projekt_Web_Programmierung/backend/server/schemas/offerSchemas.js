@@ -23,6 +23,14 @@ export const createOfferOptions = {
 
 export const getOffersOptions = {
     schema: {
+        querystring: {
+            type: "object",
+            properties: {
+                customer_id: { type: "integer" },
+                name: { type: "string" },
+                status: { type: "string", enum: ["Draft", "In Progress", "Active", "On Ice"] },
+            },
+        },
         response: {
             200: {
                 type: "array",

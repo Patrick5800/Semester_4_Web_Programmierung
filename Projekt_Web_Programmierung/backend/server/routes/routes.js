@@ -57,6 +57,8 @@ import {
     createTestOffer,
 } from "../core/core.js";
 
+import { authorize } from '../../authorization/authorization.js';
+
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { promises as fs } from 'fs';
@@ -74,15 +76,15 @@ In customerRoutes sind folgende Routen definiert:
 - Create a customer
 */
 
-export async function customerRoutes(fastify, options)
+export async function customerRoutes(fastify, options) 
 {
-    fastify.get("/all", getCustomersOptions, async (request, reply) =>
+    fastify.get("/all", getCustomersOptions, async (request, reply) => 
     {
-        const customers = getCustomers(fastify);
-        if (!customers)
-        {
+        const filters = request.query;
+        const customers = getCustomers(fastify, filters);
+        if (!customers) {
             reply.code(404);
-            return {error: "No customers found"};
+            return { error: "No customers found" };
         }
         return customers;
     });
@@ -140,19 +142,19 @@ In offferRoutes sind folgende Routen definiert:
 - Create an offer
 */
 
-export async function offerRoutes(fastify, options)
+export async function offerRoutes(fastify, options) 
 {
-    fastify.get("/all", getOffersOptions, async (request, reply) =>
+    fastify.get("/all", getOffersOptions, async (request, reply) => 
     {
-        const offers = getOffers(fastify);
-        if (!offers)
-        {
+        const filters = request.query;
+        const offers = getOffers(fastify, filters);
+        if (!offers) {
             reply.code(404);
-            return {error: "No offers found"};
+            return { error: "No offers found" };
         }
         return offers;
     });
-
+    
     fastify.post("/create", createOfferOptions, async (request, reply) =>
     {
         const offerProperties = request.body;

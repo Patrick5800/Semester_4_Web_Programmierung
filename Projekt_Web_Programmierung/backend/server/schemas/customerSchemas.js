@@ -23,6 +23,13 @@ const createCustomerOptions = {
 
 const getCustomersOptions = {
     schema: {
+        querystring: {
+            type: "object",
+            properties: {
+                name: { type: "string" },
+                address: { type: "string" },
+            },
+        },
         response: {
             200: {
                 type: "array",
