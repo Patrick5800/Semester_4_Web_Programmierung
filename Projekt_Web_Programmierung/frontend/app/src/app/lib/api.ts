@@ -7,9 +7,10 @@ function getAuthorizationHeader() {
 }
 
 // Customer APIs
-export async function fetchAllCustomers() {
+export async function fetchAllCustomers(filters: { name?: string; address?: string } = {}) {
     try {
-        const response = await fetch(`${BASE_URL}/customer/all`, {
+        const queryParams = new URLSearchParams(filters).toString();
+        const response = await fetch(`${BASE_URL}/customer/all?${queryParams}`, {
             headers: {
                 "Authorization": getAuthorizationHeader(),
             },
@@ -101,9 +102,10 @@ export async function deleteCustomer(customer_id: number) {
 }
 
 // Offer APIs
-export async function fetchAllOffers() {
+export async function fetchAllOffers(filters: { customer_id?: string; name?: string; status?: string } = {}) {
     try {
-        const response = await fetch(`${BASE_URL}/offer/all`, {
+        const queryParams = new URLSearchParams(filters).toString();
+        const response = await fetch(`${BASE_URL}/offer/all?${queryParams}`, {
             headers: {
                 "Authorization": getAuthorizationHeader(),
             },

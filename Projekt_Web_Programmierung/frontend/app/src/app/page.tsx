@@ -1,20 +1,15 @@
-import CustomerList from "./ui/customer-list";
-import Head from "next/head";
+import OfferList from "./ui/offer-list"; // Importiert die OfferList-Komponente um component driven architecture zu verwenden
 
 export default function Home()
   {
     return (
       <div>
-        <Head>
-          <title>Prismarine Solutions</title>
-          <meta name="description" content="Prismarine Solutions - Ihr Partner für individuelle Softwarelösungen"></meta>
-        </Head>
-        <CustomerList></CustomerList>
+        <OfferList></OfferList>
       </div>
     );
   }
 
-export function generateMetadata() {
+export function generateMetadata() { // Funktion für die Metadaten, damit die Seite im Browser korrekt heißt
   return {
     title: "Prismarine Solutions",
     description: "Prismarine Solutions - Ihr Partner für individuelle Softwarelösungen",

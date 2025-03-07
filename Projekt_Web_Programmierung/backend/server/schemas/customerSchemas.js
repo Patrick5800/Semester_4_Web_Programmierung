@@ -1,3 +1,6 @@
+// Diese Routen sind teilweise KI-generiert, da sie sich sehr ähneln.
+// Die OfferSchemas sind die Schemas, die für die Offer-Routen verwendet werden.
+
 const createCustomerOptions = {
     schema: {
         body: {

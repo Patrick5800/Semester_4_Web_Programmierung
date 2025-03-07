@@ -1,13 +1,14 @@
-import fp from "fastify-plugin";
+import fp from "fastify-plugin"; 
 import Database from "better-sqlite3";
 
-const filePath = "./database/project.db";
+const filePath = "./database/project.db"; // Pfad zur SQLite-Datenbank
 
-const createTableCustomers = 
+// Erstellt Tabelle für Kunden mit Primärschlüssel customer_id, Name, E-Mail, Telefon, Adresse, Erstellungsdatum und Aktualisierungsdatum. Required sind dabei nur Name und E-Mail
+const createTableCustomers =
 `
 CREATE TABLE IF NOT EXISTS customers 
 (
-  customer_id INTEGER PRIMARY KEY AUTOINCREMENT, 
+  customer_id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL, 
   email TEXT NOT NULL,
   phone TEXT,
@@ -17,6 +18,7 @@ CREATE TABLE IF NOT EXISTS customers
 )
 `;
 
+// Erstellt Tabelle für Angebote mit Primärschlüssel offer_id, Fremdschlüssel customer_id, Name, Preis, Währung, Status, Erstellungsdatum und Aktualisierungsdatum. Status ist dabei auf Draft, In Progress, Active und On Ice beschränkt und Required sind Name und customer_id
 const createTableOffers =
 `
 CREATE TABLE IF NOT EXISTS offers 
@@ -33,6 +35,7 @@ CREATE TABLE IF NOT EXISTS offers
 )
 `;
 
+// Erstellt Tabelle für Kommentare mit Primärschlüssel comment_id, Fremdschlüssel offer_id, Kommentar-Text, Ersteller, Erstellungsdatum und Aktualisierungsdatum. Required sind dabei offer_id und comment_text
 const createTableComments =
 `
 CREATE TABLE IF NOT EXISTS comments
@@ -47,6 +50,7 @@ CREATE TABLE IF NOT EXISTS comments
 )
 `;
 
+// Erstellt Tabelle für Dateien mit Primärschlüssel file_id, Fremdschlüssel offer_id, Dateiname, Dateipfad, Hochladedatum und Tags. Required sind dabei offer_id, file_name und file_path
 const createTableFiles =
 `
 CREATE TABLE IF NOT EXISTS files
@@ -61,7 +65,7 @@ CREATE TABLE IF NOT EXISTS files
 )
 `;
 
-function dbConnector(fastify, options, next) {
+function dbConnector(fastify, options, next) { //Erstellung der einzelnen Tabellen und Verbindung zur Datenbank
     const db = new Database(filePath);
 
     db.exec(createTableCustomers);

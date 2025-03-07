@@ -17,18 +17,25 @@ interface Offer {
 export default function OfferList() {
     const [offers, setOffers] = useState<Offer[]>([]);
     const [loading, setLoading] = useState(true);
+    const [filters, setFilters] = useState<{ customer_id?: string; name?: string; status?: string }>({ status: "Draft" });
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         async function loadOffers() {
-            const data = await fetchAllOffers();
-            // Sortiere die Angebote nach der größten offer_id zuerst
-            const sortedData = data.sort((a: Offer, b: Offer) => b.offer_id - a.offer_id);
-            setOffers(sortedData);
-            setLoading(false);
+            try {
+                const data = await fetchAllOffers(filters);
+                // Sortiere die Angebote nach der größten offer_id zuerst
+                const sortedData = data.sort((a: Offer, b: Offer) => b.offer_id - a.offer_id);
+                setOffers(sortedData);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error fetching offers:", error);
+                setLoading(false);
+            }
         }
         loadOffers();
-    }, []);
+    }, [filters]);
 
     if (loading) {
         return <div>Wird geladen...</div>;
@@ -42,14 +49,50 @@ export default function OfferList() {
         router.push('/offer/create');
     };
 
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+    };
+
+    const handleApplyFilters = () => {
+        setShowFilterMenu(false);
+    };
+
     const role = localStorage.getItem("role");
 
     return (
         <div className={styles["table-container"]}>
-            {(role === "Account-Manager" || role === "Developer") && (
-                <button className={styles.createButton} onClick={handleCreateOfferClick}>
-                    Angebot erstellen
+            <div className={styles["button-container"]}>
+                {(role === "Account-Manager" || role === "Developer") && (
+                    <button className={styles.createButton} onClick={handleCreateOfferClick}>
+                        Angebot erstellen
+                    </button>
+                )}
+                <button className={styles.createButton} onClick={() => setShowFilterMenu(!showFilterMenu)}>
+                    Filter
                 </button>
+            </div>
+            {showFilterMenu && (
+                <div className={styles.filterMenu}>
+                    <label>
+                        Kunden-ID:
+                        <input type="text" name="customer_id" value={filters.customer_id || ""} onChange={handleFilterChange} />
+                    </label>
+                    <label>
+                        Name:
+                        <input type="text" name="name" value={filters.name || ""} onChange={handleFilterChange} />
+                    </label>
+                    <label>
+                        Status:
+                        <select name="status" value={filters.status || ""} onChange={handleFilterChange}>
+                            <option value="">Alle</option>
+                            <option value="Draft">Entwurf</option>
+                            <option value="In Progress">In Bearbeitung</option>
+                            <option value="Active">Aktiv</option>
+                            <option value="On Ice">Auf Eis</option>
+                        </select>
+                    </label>
+                                    </div>
             )}
             <table>
                 <thead>
@@ -76,7 +119,7 @@ export default function OfferList() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={6}>Keine Angebote verfügbar</td>
+                            <td colSpan={6}>Keine Angebote gefunden</td>
                         </tr>
                     )}
                 </tbody>

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import styles from "./header.module.css";
-import Link from "next/link";
-import Image from "next/image";
+import { useState, useEffect } from "react"; // Importiert useState und useEffect für den Zustand und Effekte
+import styles from "./header.module.css"; // Importiert die Styles für den Header
+import Link from "next/link"; // Importiert Link für die Navigation
+import Image from "next/image"; // Importiert Image für das Logo
 
 export default function Header() {
   const [role, setRole] = useState("User");
@@ -11,15 +11,15 @@ export default function Header() {
   useEffect(() => {
     const savedRole = localStorage.getItem("role");
     if (savedRole) {
-      setRole(savedRole);
+      setRole(savedRole); // Rolle aus dem lokalen Speicher laden
     }
   }, []);
 
   const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newRole = event.target.value;
-    setRole(newRole);
-    localStorage.setItem("role", newRole);
-    window.location.reload();
+    setRole(newRole); // Rolle im Zustand aktualisieren
+    localStorage.setItem("role", newRole); // Neue Rolle im lokalen Speicher speichern
+    window.location.reload(); // Seite neu laden, um die Rollenänderung anzuwenden
   };
 
   return (

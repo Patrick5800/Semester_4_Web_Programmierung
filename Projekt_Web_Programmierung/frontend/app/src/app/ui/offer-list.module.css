@@ -47,3 +47,16 @@
 .row {
     cursor: pointer;
 }
+.filterMenu {
+    display: flex;
+    margin: 10px;
+}
+.filterMenu input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-right: 10px;
+}
+ .filterMenu label {
+    margin: 10px;
+}

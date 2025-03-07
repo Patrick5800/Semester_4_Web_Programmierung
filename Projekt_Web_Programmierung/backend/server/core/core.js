@@ -1,9 +1,10 @@
-// CRUD-Funktionen für die Customer-Tabelle
+// CRUD-Funktionen für die Customer Tabelle
+
 function getCustomers(fastify, filters) {
-    let query = "SELECT * FROM customers WHERE 1=1";
+    let query = "SELECT * FROM customers WHERE 1=1"; 
     const params = [];
 
-    if (filters.name) {
+    if (filters.name) { // Hinzufügen der Filterbedingungen name und addresse für Kunden
         query += " AND name LIKE ?";
         params.push(`%${filters.name}%`);
     }
@@ -92,13 +93,15 @@ function deleteCustomer(fastify, customer_id) {
 }
 
 // CRUD-Funktionen für die Offer-Tabelle
+//Legacy-Daten-Import-Funktion
+
 
 function getOffers(fastify, filters) {
     let query = "SELECT * FROM offers WHERE 1=1";
     const params = [];
 
     if (filters.customer_id) {
-        query += " AND customer_id = ?";
+        query += " AND customer_id = ?"; //Hinzufügen der Filterbedingungen customer_id, name und status für Angebote
         params.push(filters.customer_id);
     }
     if (filters.name) {
@@ -157,12 +160,12 @@ function createOffer(fastify, offerProperties) {
 }
 
 function createLegacyOffer(fastify, legacyData) {
-    const insertIntoStatement = fastify.db.prepare("INSERT INTO offers (customer_id, name, price, currency, status, created_at) VALUES (?, ?, ?, ?, ?, ?)");
+    const insertIntoStatement = fastify.db.prepare("INSERT INTO offers (customer_id, name, price, currency, status, created_at) VALUES (?, ?, ?, ?, ?, ?)"); 
     const selectStatement = fastify.db.prepare("SELECT * FROM offers WHERE offer_id = ?");
-    const offerProperties = transformLegacyData(legacyData);
+    const offerProperties = transformLegacyData(legacyData); // Transformiere die Legacy-Daten in das neue Format
 
     const offerToCreate = {
-        customer_id: offerProperties.customer_id,
+        customer_id: offerProperties.customer_id, //Mappen der Legacy-Daten auf die neuen Spalten
         name: offerProperties.name,
         price: offerProperties.price,
         currency: offerProperties.currency,
@@ -172,7 +175,7 @@ function createLegacyOffer(fastify, legacyData) {
 
     try {
         const { customer_id, name, price, currency, status, created_at } = offerToCreate;
-        const info = insertIntoStatement.run(customer_id, name, price, currency, status, created_at);
+        const info = insertIntoStatement.run(customer_id, name, price, currency, status, created_at); //Ausführen des INSERT-Statements
         const createdOffer = selectStatement.get(info.lastInsertRowid);
         return createdOffer;
     } catch (error) {
@@ -230,41 +233,36 @@ function changeOfferStatus(fastify, offer_id, status) {
     }
 }
 
-function transformLegacyData(legacyData) {
-    const stateMapping = {
+function transformLegacyData(legacyData) { //Funktion um die Legacy-Daten in das neue Format zu transformieren
+    const stateMapping = { //Mapping der Legacy-Statuswerte mit Schreibfehlern wie in dem Beispiel JSON auf die neuen Statuswerte
         "Draft": "Draft",
         "Entwurf": "Draft",
         "Draf": "Draft",
         "Drafft": "Draft",
-        // Add more variations for "Draft" if needed
 
         "In Progress": "In Progress",
         "In-Progress": "In Progress",
         "In Bearbeitung": "In Progress",
         "InProgress": "In Progress",
         "InProgressing": "In Progress",
-        // Add more variations for "In Progress" if needed
 
         "Active": "Active",
         "Aktiv": "Active",
         "Actif": "Active",
         "Actve": "Active",
-        // Add more variations for "Active" if needed
 
         "On Ice": "On Ice",
         "On-Ice": "On Ice",
         "Auf Eis": "On Ice",
         "OnIce": "On Ice",
         "On-Ic": "On Ice",
-        // Add more variations for "On Ice" if needed
     };
 
     let state = legacyData.xOffer.state;
     if (stateMapping[state]) {
         state = stateMapping[state];
     } else {
-        // Default to "Draft" if the state is not recognized
-        state = "Draft";
+        state = "Draft"; //Setzt den Status auf "Draft", wenn der Status nicht erkannt wird
     }
 
     return {
@@ -352,14 +350,14 @@ function deleteComment(fastify, comment_id) {
     }
 }
 
-// CRUD-Funktionen für die Files-Tabelle
+// CRUD-Funktionen für die Files-Tabelle (create, read, delete)
 
 function createFile(fastify, fileProperties) {
     const insertIntoStatement = fastify.db.prepare("INSERT INTO files (offer_id, file_name, file_path) VALUES (?, ?, ?)");
     const selectStatement = fastify.db.prepare("SELECT * FROM files WHERE file_id = ?");
 
     const fileToCreate = {
-        offer_id: parseInt(fileProperties.offer_id, 10), // Ensure offer_id is an integer
+        offer_id: parseInt(fileProperties.offer_id, 10), // Sichergehen, dass offer_id ein Integer ist
         file_name: fileProperties.file_name,
         file_path: fileProperties.file_path,
     };
@@ -379,7 +377,7 @@ function getFilesByOfferId(fastify, offer_id) {
     const statement = fastify.db.prepare("SELECT * FROM files WHERE offer_id = ?");
 
     try {
-        const files = statement.all(parseInt(offer_id, 10)); // Ensure offer_id is an integer
+        const files = statement.all(parseInt(offer_id, 10));
         return files;
     } catch (error) {
         fastify.log.error(error);
@@ -391,7 +389,7 @@ function getFileById(fastify, file_id) {
     const statement = fastify.db.prepare("SELECT * FROM files WHERE file_id = ?");
 
     try {
-        const file = statement.get(parseInt(file_id, 10)); // Ensure file_id is an integer
+        const file = statement.get(parseInt(file_id, 10));
         return file;
     } catch (error) {
         fastify.log.error(error);
@@ -411,7 +409,7 @@ function deleteFile(fastify, file_id) {
     }
 }
 
-// Testfunktionen
+// Testfunktionen für das Leichte hinzufügen von Testdaten (createTestCustomer, createTestOffer)
 
 function createTestCustomer(fastify, customerProperties) { 
     const insertIntoStatement = fastify.db.prepare("INSERT INTO customers (name, email, phone, address) VALUES (?, ?, ?, ?)");
@@ -457,14 +455,8 @@ function createTestOffer(fastify, offerProperties) {
         return null;
     }
 }
-export {
-    createFile,
-    getFilesByOfferId,
-    getFileById,
-    deleteFile,
-};
 
-export {
+export { //export für die Weiterverwendung
     getCustomers,
     getCustomerById,
     createCustomer,
@@ -485,4 +477,8 @@ export {
     deleteComment,
     createTestCustomer,
     createTestOffer,
+    createFile,
+    getFilesByOfferId,
+    getFileById,
+    deleteFile,
 };

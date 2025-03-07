@@ -101,14 +101,14 @@ export default function CommentList({ offer_id }: CommentListProps) {
         });
     };
 
-    const handleSaveClick = async () => { //ERROR
+    const handleSaveClick = async () => { //FEHLER
         if (isEditing && selectedComment && hasSelected) {
             try {
                 await updateComment(selectedComment.comment_id, selectedComment);
                 loadComments();
                 setIsEditing(false);
             } catch (error) {
-                console.error("Error updating comment:", error); //<-- Error here
+                console.error("Error updating comment:", error); //<-- FEHLER HIER
             }
         }
         if (isCreating && commentToCreate) {

@@ -17,12 +17,14 @@ export default function CustomerList() {
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [filters, setFilters] = useState<{ name?: string; address?: string }>({});
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         async function loadCustomers() {
             try {
-                const data = await fetchAllCustomers();
+                const data = await fetchAllCustomers(filters);
                 if (Array.isArray(data)) {
                     setCustomers(data);
                 } else {
@@ -36,14 +38,14 @@ export default function CustomerList() {
             }
         }
         loadCustomers();
-    }, []);
+    }, [filters]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div>Wird geladen...</div>;
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div>Fehler: {error}</div>;
     }
 
     const handleRowClick = (customer_id: number) => {
@@ -54,14 +56,36 @@ export default function CustomerList() {
         router.push('/customer/create');
     };
 
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+    };
+
     const role = localStorage.getItem("role");
 
     return (
         <div className={styles["table-container"]}>
-            {(role === "Account-Manager" || role === "Developer") && (
-                <button className={styles.createButton} onClick={handleCreateCustomerClick}>
-                    Kunde erstellen
+            <div className={styles["button-container"]}>
+                {(role === "Account-Manager" || role === "Developer") && (
+                    <button className={styles.createButton} onClick={handleCreateCustomerClick}>
+                        Kunde erstellen
+                    </button>
+                )}
+                <button className={styles.createButton} onClick={() => setShowFilterMenu(!showFilterMenu)}>
+                    Filter
                 </button>
+            </div>
+            {showFilterMenu && (
+                <div className={styles.filterMenu}>
+                    <label>
+                        Name:
+                        <input type="text" name="name" value={filters.name || ""} onChange={handleFilterChange} />
+                    </label>
+                    <label>
+                        Adresse:
+                        <input type="text" name="address" value={filters.address || ""} onChange={handleFilterChange} />
+                    </label>
+                </div>
             )}
             <table>
                 <thead>
@@ -86,7 +110,7 @@ export default function CustomerList() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={5}>No customers available</td>
+                            <td colSpan={5}>Keine Kunden fefunden</td>
                         </tr>
                     )}
                 </tbody>

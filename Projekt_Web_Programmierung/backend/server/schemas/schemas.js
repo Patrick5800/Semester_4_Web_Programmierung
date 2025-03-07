@@ -1,3 +1,6 @@
+//Hier werden die Schemas für die verschiedenen Datenmodelle der verschiedenen Tabellen definiert.
+//Die Schemas werden später in den Routen verwendet, um die Schemavalidierung durchzuführen.
+
 const customerSchema = {
     $id: "customerSchema",
     type: "object",

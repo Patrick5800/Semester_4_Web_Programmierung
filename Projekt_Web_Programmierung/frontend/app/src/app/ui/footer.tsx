@@ -2,6 +2,7 @@ import styles from "./footer.module.css";
 import Link from "next/link";
 import Image from "next/image";
 
+//Globaler Footer mit Kontaktinformationen und Links zu sozialen Medien, sowie Impressum und Datenschutzerklärung um den Anschein von Compliance mit der DSGVO zu wahren
 export default function Footer() {
   return (
     <footer className={styles.footer}>
@@ -22,7 +23,7 @@ export default function Footer() {
         <Link href="/privacy" className={styles.navlink}>Datenschutz</Link>
       </div>
       <div className={styles.copyright}>
-        <p>© 2024 Prismarine Solutions GmbH</p>
+        <p>© 2025 Prismarine Solutions GmbH</p>
       </div>
     </footer>
   );

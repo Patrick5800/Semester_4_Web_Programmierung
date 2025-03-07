@@ -1,4 +1,4 @@
-const PrivacyPage = () => {
+const PrivacyPage = () => { //KI-generierte Datenschutzerklärung
     return (
         <div>
             <h1>Datenschutzerklärung</h1>

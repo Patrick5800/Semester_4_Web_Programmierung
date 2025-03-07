@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import Link from "next/link";
-import Header from "./ui/header";
-import styles from "./ui/header.module.css";
-import Footer from "./ui/footer";
+import { Geist, Geist_Mono } from "next/font/google"; // Importiert die Schriftarten für modernes Design
+import "./globals.css"; // Importiert die globalen Styles
+import Header from "./ui/header"; // Importiert den Header für globalen Header
+import Footer from "./ui/footer"; // Importiert den Footer für globalen Footer
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = Geist_Mono({ 
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });

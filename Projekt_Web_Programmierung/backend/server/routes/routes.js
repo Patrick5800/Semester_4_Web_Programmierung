@@ -59,20 +59,23 @@ import {
 
 import { authorize } from '../authorization/authorization.js';
 
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { promises as fs } from 'fs';
-import path from 'path';
+import { fileURLToPath } from 'url'; // Importiert die fileURLToPath-Funktion aus dem url-Modul um den Dateipfad aus einer URL zu erhalten
+import { dirname } from 'path'; // Importiert die dirname-Funktion aus dem path-Modul um den Verzeichnisnamen des aktuellen Moduls zu erhalten
+import { promises as fs } from 'fs'; // Importiert das fs-Modul für Dateioperationen
+import path from 'path'; // Importiert das path-Modul für Dateipfade
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Import tags, tasks, files
+// Import tags, tasks,
 
 /*
 In customerRoutes sind folgende Routen definiert:
 - Get all customers
 - Create a customer
+- Get a customer by ID
+- Update a customer
+- Delete a customer
 */
 
 export async function customerRoutes(fastify, options) {
@@ -131,8 +134,13 @@ export async function customerRoutes(fastify, options) {
 
 /*
 In offerRoutes sind folgende Routen definiert:
-- Get all offers
+- Get all offers with or without filter parameters
 - Create an offer
+- Get an offer by ID
+- Update an offer
+- Delete an offer
+- Change the status of an offer
+- Create an offer and comments from legacy data
 */
 
 export async function offerRoutes(fastify, options) {
@@ -218,7 +226,7 @@ export async function offerRoutes(fastify, options) {
             return { error: "Could not create offer and comments from legacy data" };
         }
 
-        // Create comments from hints
+        // Speichert Kommentare aus hints ab, damit sie nicht verloren gehen
         const hints = legacyData.xOffer.hints;
         for (const hint of hints) {
             const commentProperties = {
@@ -299,13 +307,19 @@ export async function commentRoutes(fastify, options) {
     });
 }
 
-//createFile
-//getFilesByOfferId
-//getFileById
+/*
+In fileRoutes sind folgende Routen definiert:
+- Upload a file for an offer
+- Get all files for an offer
+- Get the content of a file by ID
+- Get file information by ID
+- Delete a file by ID
+*/
+
 
 export async function fileRoutes(fastify, options) {
     fastify.post('/upload/:offer_id', createFileOptions, async (request, reply) => {
-        const offer_id = parseInt(request.params.offer_id, 10); // Ensure offer_id is an integer
+        const offer_id = parseInt(request.params.offer_id, 10);
         const data = await request.file();
 
         if (!offer_id) {
@@ -316,21 +330,21 @@ export async function fileRoutes(fastify, options) {
             return reply.status(400).send({ error: 'Only .txt files are supported' });
         }
 
-        // Create a placeholder fileInfo object
+        // Platzhalter für die Dateiinformationen
         const fileInfo = {
             offer_id: offer_id,
             file_name: data.filename,
-            file_path: '' // Placeholder, will be updated after file creation
+            file_path: '' //wird später aktualisiert (Ursprungspfad)
         };
 
-        // Save fileInfo to your database to get the file_id
+        // Speichern um die file_id zu erhalten
         const createdFile = createFile(fastify, fileInfo);
 
         if (!createdFile) {
             return reply.status(500).send({ error: 'Could not save file information' });
         }
 
-        // Use the file_id to create the file path
+        // file_id für den Dateinamen verwenden für das spätere einfache Auffinden
         const filePath = path.join(__dirname, '../../assets', `${createdFile.file_id}.txt`);
         try {
             await fs.writeFile(filePath, await data.toBuffer());
@@ -339,20 +353,17 @@ export async function fileRoutes(fastify, options) {
             return reply.status(500).send({ error: 'Could not save file to disk' });
         }
 
-        // Update file_path in the database
         const updateStatement = fastify.db.prepare("UPDATE files SET file_path = ? WHERE file_id = ?");
         updateStatement.run(filePath, createdFile.file_id);
 
-        // Update the createdFile object with the correct file_path
-        createdFile.file_path = filePath;
+        createdFile.file_path = filePath; //Dateipfad aktualisieren
 
         reply.code(201).send({ file: createdFile });
     });
 
     fastify.get('/:offer_id', getFilesByOfferIdOptions, async (request, reply) => {
-        const offer_id = parseInt(request.params.offer_id, 10); // Ensure offer_id is an integer
+        const offer_id = parseInt(request.params.offer_id, 10);
 
-        // Fetch file information from your database based on offer_id
         const files = getFilesByOfferId(fastify, offer_id);
 
         if (!files) {
@@ -363,7 +374,7 @@ export async function fileRoutes(fastify, options) {
     });
 
     fastify.get('/:file_id/content', getFileByIdOptions, async (request, reply) => {
-        const file_id = parseInt(request.params.file_id, 10); // Ensure file_id is an integer
+        const file_id = parseInt(request.params.file_id, 10);
         const filePath = path.join(__dirname, '../../assets', `${file_id}.txt`);
 
         try {
@@ -375,7 +386,7 @@ export async function fileRoutes(fastify, options) {
     });
 
     fastify.get('/:file_id/file', getFileByIdOptions, async (request, reply) => {
-        const file_id = parseInt(request.params.file_id, 10); // Ensure file_id is an integer
+        const file_id = parseInt(request.params.file_id, 10);
         const file = getFileById(fastify, file_id);
         if (!file) {
             return reply.status(404).send({ error: 'File not found' });
@@ -384,7 +395,7 @@ export async function fileRoutes(fastify, options) {
     });
 
     fastify.delete('/:file_id/delete', deleteFileOptions, async (request, reply) => {
-        const file_id = parseInt(request.params.file_id, 10); // Ensure file_id is an integer
+        const file_id = parseInt(request.params.file_id, 10); 
         const file = getFileById(fastify, file_id);
         if (!file) {
             return reply.status(404).send({ error: 'File not found' });
@@ -457,6 +468,6 @@ export function testRoutes(fastify, options) {
     });
 }
 
-export async function tagRoutes(fastify, options) {}
+export async function tagRoutes(fastify, options) {} //Nicht implementiert
 
-export async function taskRoutes(fastify, options) {}
+export async function taskRoutes(fastify, options) {} //Nicht implementiert
